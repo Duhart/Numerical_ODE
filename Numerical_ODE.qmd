@@ -1,0 +1,294 @@
+---
+title: "Numerical ODE"
+author: "Dr23142n0g"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+editor: visual
+---
+
+# A Brief Introduction to the Numerical Analysis of Ordinary Differential Equations
+
+When I decided to study a Master of Science, I wanted to solve differential equations. At the time, I thought of both the theory and the computational aspect equally attractive. However, through my learning process I ended very much in love with the purely theoretical aspect more leaving all the numerical and computational aspects *a bit* behind. Nevertheless, I still think that that piece of maths which I decided not to keep pursuing is very interesting and I thought I would be nice to write these notes if ever want to revisit some of these topics again.
+
+The main reference for all what I will be writing here is the book [*A First Course in the Numerical Analysis of Differential Equations*](https://www.amazon.co.uk/dp/0521734908/)by Arieh Iserles (who by the way was one of the two professors who interviewed me for a PhD at Cambridge... but that's another story).
+
+## ODEs
+
+I will focus on explicit ODEs of the form $$\dot y = f(t,y)$$ where $t>t_0$, $y\colon[t_0,\infty)\to\mathbb R^d$ and $f\colon[t_0,\infty)\times\mathbb R^d$ and there is an initial condition $$y(t_0)=y_0\in\mathbb R^d. $$ Furthermore, we will assume that $y$, and therefore $f$, is Lipschitz continuous. That is, there exists $\lambda>0$ such that if $s<t$ then $$||y(t)-y(s)||\leq \lambda|t-s|. $$
+
+## Euler's method
+
+The idea is very simple, recall the definition of the derivative is given by
+
+$$
+\dot y(t) = \lim_{h\to0}\frac{y(t+h)-y(t)}{h}. 
+$$
+
+The idea is to choose a time step $h>0$ small enough and starting at time $t_0$ we may approximate the definition to get a value of the ODE at time $t_1=t_o+h$ as $$y_1 = y_0+hf(y_0,t_0). $$
+
+Following this idea recursively, once we have an approximation $y_n$ for $y(t_n)$ at $t_n = t_0 + nh$, we approximate the value at the next time step as $$y_{n+1}=y_n + f(t_n,y_n).$$
+
+### Example: Exponential function
+
+Here is an easy example: $$\dot y = -\mu y$$ with initial condition $y(0) = y_0>0$.
+
+Let $h>0$ be a time step, I claim that following Euler's method we get the approximation $$y_n = y_0(1-h\mu)^n.$$
+
+This may be proved by induction over $n$:
+
+For $n=0$, we get the initial condition $$y_0 = y_0(1-h\mu)^0=y_0,$$ so it is trivially true.
+
+Assume true for $n\in\mathbb N$, then
+
+$$
+\begin{align}
+y_{n+1} &= y_n + hf(t_n,y_n)\\
+&= y_0(1-h\mu)^n -h\mu_n\\
+&= y_0(1-h\mu)^n -h\mu(1-h\mu)^n\\
+&= y_0(1-h\mu)^{n+1}
+\end{align}
+$$
+
+This passes the formula to the next natural number and concludes the proof.
+
+$$
+\blacksquare
+$$
+
+Numerically, set $\mu=\frac{1}{2}$, an initial condition of $y_0 = 1$, and a time step of $h=0.01$ to solve the equation on the interval $[0,5]$.
+
+```{r, message=FALSE}
+# libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+
+# Function that performs Euler's method on a univariate function
+euler <- function(h,fun,y0 = 0,t0=0,tn=1,...){
+  times <- seq(t0,tn,by=h)
+  if(times[length(times)]!=tn){
+    times <- c(times,tn)
+  }
+  
+    res <- data.frame(n = 1:length(times),
+                    tn = times,
+                    yn = y0,
+                    fn = fun(t0,y0,...))
+  
+  for(k in 2:nrow(res)){
+    res$yn[k] <- res$yn[k-1] + h*res$fn[k-1]
+    res$fn[k] <- fun(res$tn[k],res$yn[k],...)
+  }
+  
+  return(res)
+}
+
+# ODE
+ode_ex1 <- function(t, y, mu){
+  return(-mu*y)
+}
+
+sol_ex1 <- euler(h = 0.5,
+                 fun = ode_ex1,
+                 y0 = 1,
+                 t0 = 0,
+                 tn = 5,
+                 mu = 1/2)
+
+sol_ex1 <- sol_ex1 %>% mutate(exact = exp(-tn/2),
+                              numerical = yn)
+
+sol_ex1 %>% pivot_longer(cols = c('exact','numerical'),
+                         names_to = 'method',
+                         values_to = 'y') %>% 
+  ggplot(aes(x=tn, y=y, col = method)) +
+  geom_line() +
+  ggtitle('Exact vs numerical solution\nTime step: 0.5') + 
+  xlab('time') +
+  ylab('solution')
+
+```
+
+At this point one would like to talk about the error that we have when approximating with the numerical approach towards the exact solution. I'll postpone this analysis for later.
+
+## Trapezoidal method
+
+Recall we are assuming that out function $f$ is Lipschitz continuous. Then the solution to the ODE is not only continuous but it is differentiable. Using a Taylor approximation of the first order, we may write
+
+$$
+y(t+h) = y(t) + h\dot y(t) + o(h).
+$$
+
+To approximate, we get rid of the error:
+
+$$
+y(t+h) \approx y(t) + h\dot y(t),
+$$
+
+and plugging the ODE means substituting $\dot y(t)$ by a constant value, such as $f(t,y(t))$:
+
+$$
+y(t+h) \approx y(t) + hf(t,y(t))
+$$
+
+Which is basically Euler's method, but what if we think that a better constant would be not $f(t,y(t))$ but $f(t,y(t+h))$ instead? Instead of using the derivative at the initial point, we use the derivative at the last point?
+
+This would imply effectively having iterations of the following form:
+
+$$
+y_{n+1} = y_n +hf(t_n,y_{n+1}).
+$$
+
+Of course here's an issue, because what we are trying to find is $y_{n+1}$ itself, so if the function $f$ is not *nice*, then we can't expect to be able to find the iteration explicitly, and hence the name of these type of methods: *implicit methods*.
+
+To solve the iteration we need to rely on some numerical method to solve the equation.
+
+### Example: Exponential function again
+
+Recall the equation $$\dot y = -\mu y.$$
+
+Then, the trapezoidal iteration starting from a given point $y_0$ at time $t_0$ gives:
+
+$$
+\begin{align}
+y_1 &= y_0 + hf(t_0,y_1)\\
+& = y_0 - h\mu y_1.
+\end{align}
+$$
+
+Fortunately, this is a simple equation to solve and find
+
+$$
+y_1 = y_0(1+h\mu)^{-1}.
+$$
+
+I claim we can prove by induction that the general case follows:
+
+$$
+y_{n} = y_0(1+h\mu)^{-n}.
+$$
+
+Proof:
+
+The case base at $n=1$ was proved in the above lines, so assume the induction hypothesis holds true for $n$, then
+
+$$
+\begin{align}
+y_{n+1} &= y_n +hf(t_n,y_{n+1})\\
+&= y_n - h\mu y_{n+1}
+\end{align}
+$$
+
+Solving for $y_{n+1}$ yields
+
+$$
+\begin{align}
+y_{n+1} &=y_n(1+h\mu)^{-1}\\
+&= y_0(1+h\mu)^{-n}(1+h\mu)^{-1}\\
+&= y_0(1+h\mu)^{-(n+1)}
+\end{align}
+$$
+
+where we used the induction hypothesis in the middle line and thus proving the result.
+
+$$
+\blacksquare
+$$
+
+Here we see the particular example once more:
+
+```{r, message=FALSE}
+# ODE derivative
+ode_diff1 <- function(t, y, mu){
+  return(-mu)
+}
+
+newton <- function(fun, dfun, x0, eps = 1e-10, maxiter = 100,...){
+  #browser()
+  z <- fun(x0,...)
+  k <- 0
+  if(abs(z)<=eps){
+    res <- list(x = x0,
+                y = z,
+                iterations = k,
+                convergence = TRUE)
+  }else{
+    change <- Inf
+    while(k <= maxiter & change > eps){
+      x1 <- x0 - fun(x0,...)/dfun(x0,...)
+      change <- (x1-x0)^2
+      x0 <- x1
+      z <- fun(x0)
+      k <- k+1
+    }
+    
+    if(k > maxiter){
+      res <- list(x = x0,
+                  y = z,
+                  iterations = k,
+                  convergence = FALSE)
+    }else{
+      res <- list(x = x0,
+                  y = z,
+                  iterations = k,
+                  convergence = TRUE)
+    }
+  }
+  
+return(res)
+}
+
+# Function that performs the trapezoidal method on a univariate function
+trapezoid <- function(h,ode,dode,y0 = 0,t0=0,tn=1,...){
+  #browser()
+  times <- seq(t0,tn,by=h)
+  if(times[length(times)]!=tn){
+    times <- c(times,tn)
+  }
+  
+  res <- data.frame(n = 1:length(times),
+                    tn = times,
+                    yn = y0,
+                    fn = ode(t0,y0,...))
+  
+  # Implicit function that needs solving
+  f1 <- function(y1,t0,y0,h,ode,...){
+    return(y1 -y0 -h*ode(t0,y1,...))
+  }
+  
+  # The derivative
+  df1 <- function(y1,t0,y0,h,dode,...){
+    return(1 -h*dode(t0,y1,...))
+  }
+  
+  for(k in 2:nrow(res)){
+    browser()
+    newton_sol <- newton(fun = f1, dfun = df1, x0 = y0, eps = 1e-6, maxiter = 100, 
+                         t0 = res$tn[k],
+                         y0 = res$yn[k],
+                         h = h,
+                         ode = ode,
+                         dode = dode,
+                         ...)
+    
+    res$yn[k] <- newton_sol$x
+    res$fn[k] <- newton_sol$y
+  }
+  
+  return(res)
+}
+
+# Apply the trapezoidal method
+# sol_ex_2 <- trapezoid(h = 0.5,
+#                       ode = ode_ex1,
+#                       dode = ode_diff1,
+#                       y0 = 1,
+#                       t0=0,
+#                       tn=5,
+#                       mu = -1/2)
+
+```

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr23142n0g">
+
+<title>Numerical ODE</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="Numerica_ODE_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Numerica_ODE_files/libs/quarto-html/quarto.js"></script>
+<script src="Numerica_ODE_files/libs/quarto-html/popper.min.js"></script>
+<script src="Numerica_ODE_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Numerica_ODE_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Numerica_ODE_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Numerica_ODE_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Numerica_ODE_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Numerica_ODE_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Numerica_ODE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" id="toc-a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" class="nav-link active" data-scroll-target="#a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations">A Brief Introduction to the Numerical Analysis of Ordinary Differential Equations</a>
+  <ul class="collapse">
+  <li><a href="#odes" id="toc-odes" class="nav-link" data-scroll-target="#odes">ODEs</a></li>
+  <li><a href="#eulers-method" id="toc-eulers-method" class="nav-link" data-scroll-target="#eulers-method">Euler’s method</a>
+  <ul class="collapse">
+  <li><a href="#example-exponential-function" id="toc-example-exponential-function" class="nav-link" data-scroll-target="#example-exponential-function">Example: Exponential function</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Numerical ODE</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr23142n0g </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" class="level1">
+<h1>A Brief Introduction to the Numerical Analysis of Ordinary Differential Equations</h1>
+<p>When I decided to study a Master of Science, I wanted to solve differential equations. At the time, I thought of both the theory and the computational aspect equally attractive. However, through my learning process I ended very much in love with the purely theoretical aspect more leaving all the numerical and computational aspects <em>a bit</em> behind. Nevertheless, I still think that that piece of maths which I decided not to keep pursuing is very interesting and I thought I would be nice to write these notes if ever want to revisit some of these topics again.</p>
+<p>The main reference for all what I will be writing here is the book <a href="https://www.amazon.co.uk/dp/0521734908/"><em>A First Course in the Numerical Analysis of Differential Equations</em></a>by Arieh Iserles (who by the way was one of the two professors who interviewed me for a PhD at Cambridge… but that’s another story).</p>
+<section id="odes" class="level2">
+<h2 class="anchored" data-anchor-id="odes">ODEs</h2>
+<p>I will focus on explicit ODEs of the form \[\dot y = f(t,y)\] where <span class="math inline">\(t&gt;t_0\)</span>, <span class="math inline">\(y\colon[t_0,\infty)\to\mathbb R^d\)</span> and <span class="math inline">\(f\colon[t_0,\infty)\times\mathbb R^d\)</span> and there is an initial condition \[y(t_0)=y_0\in\mathbb R^d.\] Furthermore, we will assume that <span class="math inline">\(y\)</span>, and therefore <span class="math inline">\(f\)</span>, is Lipschitz continuous. That is, there exists <span class="math inline">\(\lambda&gt;0\)</span> such that if <span class="math inline">\(s&lt;t\)</span> then \[||y(t)-y(s)||\leq |t-s|.\]</p>
+</section>
+<section id="eulers-method" class="level2">
+<h2 class="anchored" data-anchor-id="eulers-method">Euler’s method</h2>
+<p>The idea is very simple, recall the definition of the derivative is given by</p>
+<p><span class="math display">\[
+\dot y(t) = \lim_{h\to0}\frac{y(t+h)-y(t)}{h}.
+\]</span></p>
+<p>The idea is to choose a time step <span class="math inline">\(h&gt;0\)</span> small enough and starting at time <span class="math inline">\(t_0\)</span> we may approximate the definition to get a value of the ODE at time <span class="math inline">\(t_1=t_o+h\)</span> as \[y_1 = y_0+hf(y_0,t_0).\]</p>
+<p>Following this idea recursively, once we have an approximation <span class="math inline">\(y_n\)</span> for <span class="math inline">\(y(t_n)\)</span> at <span class="math inline">\(t_n = t_0 + nh\)</span>, we approximate the value at the next time step as \[y_{n+1}=y_n + f(t_n,y_n).\]</p>
+<section id="example-exponential-function" class="level3">
+<h3 class="anchored" data-anchor-id="example-exponential-function">Example: Exponential function</h3>
+<p>Here is an easy example: \[\dot y = -\mu y\] with initial condition <span class="math inline">\(y(0) = y_0&gt;0\)</span>.</p>
+<p>Let <span class="math inline">\(h&gt;0\)</span> be a time step, I claim that following Euler’s method we get the approximation \[y_n = y_0(1-h\mu)^n.\]</p>
+<p>This may be proved by induction over <span class="math inline">\(n\)</span>:</p>
+<p>For <span class="math inline">\(n=0\)</span>, we get the initial condition \[y_0 = y_0(1-h\mu)^0=y_0,\] so it is trivially true.</p>
+<p>Assume true for <span class="math inline">\(n\in\mathbb N\)</span>, then</p>
+<p><span class="math display">\[
+\begin{align}
+y_{n+1} &amp;= y_n + hf(t_n,y_n)\\
+&amp;= y_0(1-h\mu)^n -h\mu_n\\
+&amp;= y_0(1-h\mu)^n -h\mu(1-h\mu)^n\\
+&amp;= y_0(1-h\mu)^{n+1}
+\end{align}
+\]</span></p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

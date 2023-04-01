@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr23142n0g">
+
+<title>Numerical ODE</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="Numerical_ODE_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Numerical_ODE_files/libs/quarto-html/quarto.js"></script>
+<script src="Numerical_ODE_files/libs/quarto-html/popper.min.js"></script>
+<script src="Numerical_ODE_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Numerical_ODE_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Numerical_ODE_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Numerical_ODE_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Numerical_ODE_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Numerical_ODE_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Numerical_ODE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" id="toc-a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" class="nav-link active" data-scroll-target="#a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations">A Brief Introduction to the Numerical Analysis of Ordinary Differential Equations</a>
+  <ul class="collapse">
+  <li><a href="#odes" id="toc-odes" class="nav-link" data-scroll-target="#odes">ODEs</a></li>
+  <li><a href="#eulers-method" id="toc-eulers-method" class="nav-link" data-scroll-target="#eulers-method">Euler’s method</a>
+  <ul class="collapse">
+  <li><a href="#example-exponential-function" id="toc-example-exponential-function" class="nav-link" data-scroll-target="#example-exponential-function">Example: Exponential function</a></li>
+  </ul></li>
+  <li><a href="#trapezoidal-method" id="toc-trapezoidal-method" class="nav-link" data-scroll-target="#trapezoidal-method">Trapezoidal method</a>
+  <ul class="collapse">
+  <li><a href="#example-exponential-function-again" id="toc-example-exponential-function-again" class="nav-link" data-scroll-target="#example-exponential-function-again">Example: Exponential function again</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Numerical ODE</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr23142n0g </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="a-brief-introduction-to-the-numerical-analysis-of-ordinary-differential-equations" class="level1">
+<h1>A Brief Introduction to the Numerical Analysis of Ordinary Differential Equations</h1>
+<p>When I decided to study a Master of Science, I wanted to solve differential equations. At the time, I thought of both the theory and the computational aspect equally attractive. However, through my learning process I ended very much in love with the purely theoretical aspect more leaving all the numerical and computational aspects <em>a bit</em> behind. Nevertheless, I still think that that piece of maths which I decided not to keep pursuing is very interesting and I thought I would be nice to write these notes if ever want to revisit some of these topics again.</p>
+<p>The main reference for all what I will be writing here is the book <a href="https://www.amazon.co.uk/dp/0521734908/"><em>A First Course in the Numerical Analysis of Differential Equations</em></a>by Arieh Iserles (who by the way was one of the two professors who interviewed me for a PhD at Cambridge… but that’s another story).</p>
+<section id="odes" class="level2">
+<h2 class="anchored" data-anchor-id="odes">ODEs</h2>
+<p>I will focus on explicit ODEs of the form <span class="math display">\[\dot y = f(t,y)\]</span> where <span class="math inline">\(t&gt;t_0\)</span>, <span class="math inline">\(y\colon[t_0,\infty)\to\mathbb R^d\)</span> and <span class="math inline">\(f\colon[t_0,\infty)\times\mathbb R^d\)</span> and there is an initial condition <span class="math display">\[y(t_0)=y_0\in\mathbb R^d. \]</span> Furthermore, we will assume that <span class="math inline">\(y\)</span>, and therefore <span class="math inline">\(f\)</span>, is Lipschitz continuous. That is, there exists <span class="math inline">\(\lambda&gt;0\)</span> such that if <span class="math inline">\(s&lt;t\)</span> then <span class="math display">\[||y(t)-y(s)||\leq \lambda|t-s|. \]</span></p>
+</section>
+<section id="eulers-method" class="level2">
+<h2 class="anchored" data-anchor-id="eulers-method">Euler’s method</h2>
+<p>The idea is very simple, recall the definition of the derivative is given by</p>
+<p><span class="math display">\[
+\dot y(t) = \lim_{h\to0}\frac{y(t+h)-y(t)}{h}.
+\]</span></p>
+<p>The idea is to choose a time step <span class="math inline">\(h&gt;0\)</span> small enough and starting at time <span class="math inline">\(t_0\)</span> we may approximate the definition to get a value of the ODE at time <span class="math inline">\(t_1=t_o+h\)</span> as <span class="math display">\[y_1 = y_0+hf(y_0,t_0). \]</span></p>
+<p>Following this idea recursively, once we have an approximation <span class="math inline">\(y_n\)</span> for <span class="math inline">\(y(t_n)\)</span> at <span class="math inline">\(t_n = t_0 + nh\)</span>, we approximate the value at the next time step as <span class="math display">\[y_{n+1}=y_n + f(t_n,y_n).\]</span></p>
+<section id="example-exponential-function" class="level3">
+<h3 class="anchored" data-anchor-id="example-exponential-function">Example: Exponential function</h3>
+<p>Here is an easy example: <span class="math display">\[\dot y = -\mu y\]</span> with initial condition <span class="math inline">\(y(0) = y_0&gt;0\)</span>.</p>
+<p>Let <span class="math inline">\(h&gt;0\)</span> be a time step, I claim that following Euler’s method we get the approximation <span class="math display">\[y_n = y_0(1-h\mu)^n.\]</span></p>
+<p>This may be proved by induction over <span class="math inline">\(n\)</span>:</p>
+<p>For <span class="math inline">\(n=0\)</span>, we get the initial condition <span class="math display">\[y_0 = y_0(1-h\mu)^0=y_0,\]</span> so it is trivially true.</p>
+<p>Assume true for <span class="math inline">\(n\in\mathbb N\)</span>, then</p>
+<p><span class="math display">\[
+\begin{align}
+y_{n+1} &amp;= y_n + hf(t_n,y_n)\\
+&amp;= y_0(1-h\mu)^n -h\mu_n\\
+&amp;= y_0(1-h\mu)^n -h\mu(1-h\mu)^n\\
+&amp;= y_0(1-h\mu)^{n+1}
+\end{align}
+\]</span></p>
+<p>This passes the formula to the next natural number and concludes the proof.</p>
+<p><span class="math display">\[
+\blacksquare
+\]</span></p>
+<p>Numerically, set <span class="math inline">\(\mu=\frac{1}{2}\)</span>, an initial condition of <span class="math inline">\(y_0 = 1\)</span>, and a time step of <span class="math inline">\(h=0.01\)</span> to solve the equation on the interval <span class="math inline">\([0,5]\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Function that performs Euler's method on a univariate function</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>euler <span class="ot">&lt;-</span> <span class="cf">function</span>(h,fun,<span class="at">y0 =</span> <span class="dv">0</span>,<span class="at">t0=</span><span class="dv">0</span>,<span class="at">tn=</span><span class="dv">1</span>,...){</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  times <span class="ot">&lt;-</span> <span class="fu">seq</span>(t0,tn,<span class="at">by=</span>h)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(times[<span class="fu">length</span>(times)]<span class="sc">!=</span>tn){</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    times <span class="ot">&lt;-</span> <span class="fu">c</span>(times,tn)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(times),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">tn =</span> times,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                    <span class="at">yn =</span> y0,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                    <span class="at">fn =</span> <span class="fu">fun</span>(t0,y0,...))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(res)){</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    res<span class="sc">$</span>yn[k] <span class="ot">&lt;-</span> res<span class="sc">$</span>yn[k<span class="dv">-1</span>] <span class="sc">+</span> h<span class="sc">*</span>res<span class="sc">$</span>fn[k<span class="dv">-1</span>]</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    res<span class="sc">$</span>fn[k] <span class="ot">&lt;-</span> <span class="fu">fun</span>(res<span class="sc">$</span>tn[k],res<span class="sc">$</span>yn[k],...)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(res)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ODE</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>ode_ex1 <span class="ot">&lt;-</span> <span class="cf">function</span>(t, y, mu){</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="sc">-</span>mu<span class="sc">*</span>y)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>sol_ex1 <span class="ot">&lt;-</span> <span class="fu">euler</span>(<span class="at">h =</span> <span class="fl">0.5</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fun =</span> ode_ex1,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y0 =</span> <span class="dv">1</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>                 <span class="at">t0 =</span> <span class="dv">0</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>                 <span class="at">tn =</span> <span class="dv">5</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>                 <span class="at">mu =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>sol_ex1 <span class="ot">&lt;-</span> sol_ex1 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">exact =</span> <span class="fu">exp</span>(<span class="sc">-</span>tn<span class="sc">/</span><span class="dv">2</span>),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>                              <span class="at">numerical =</span> yn)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>sol_ex1 <span class="sc">%&gt;%</span> <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">'exact'</span>,<span class="st">'numerical'</span>),</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                         <span class="at">names_to =</span> <span class="st">'method'</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                         <span class="at">values_to =</span> <span class="st">'y'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>tn, <span class="at">y=</span>y, <span class="at">col =</span> method)) <span class="sc">+</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Exact vs numerical solution</span><span class="sc">\n</span><span class="st">Time step: 0.5'</span>) <span class="sc">+</span> </span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'time'</span>) <span class="sc">+</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'solution'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Numerical_ODE_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>At this point one would like to talk about the error that we have when approximating with the numerical approach towards the exact solution. I’ll postpone this analysis for later.</p>
+</section>
+</section>
+<section id="trapezoidal-method" class="level2">
+<h2 class="anchored" data-anchor-id="trapezoidal-method">Trapezoidal method</h2>
+<p>Recall we are assuming that out function <span class="math inline">\(f\)</span> is Lipschitz continuous. Then the solution to the ODE is not only continuous but it is differentiable. Using a Taylor approximation of the first order, we may write</p>
+<p><span class="math display">\[
+y(t+h) = y(t) + h\dot y(t) + o(h).
+\]</span></p>
+<p>To approximate, we get rid of the error:</p>
+<p><span class="math display">\[
+y(t+h) \approx y(t) + h\dot y(t),
+\]</span></p>
+<p>and plugging the ODE means substituting <span class="math inline">\(\dot y(t)\)</span> by a constant value, such as <span class="math inline">\(f(t,y(t))\)</span>:</p>
+<p><span class="math display">\[
+y(t+h) \approx y(t) + hf(t,y(t))
+\]</span></p>
+<p>Which is basically Euler’s method, but what if we think that a better constant would be not <span class="math inline">\(f(t,y(t))\)</span> but <span class="math inline">\(f(t,y(t+h))\)</span> instead? Instead of using the derivative at the initial point, we use the derivative at the last point?</p>
+<p>This would imply effectively having iterations of the following form:</p>
+<p><span class="math display">\[
+y_{n+1} = y_n +hf(t_n,y_{n+1}).
+\]</span></p>
+<p>Of course here’s an issue, because what we are trying to find is <span class="math inline">\(y_{n+1}\)</span> itself, so if the function <span class="math inline">\(f\)</span> is not <em>nice</em>, then we can’t expect to be able to find the iteration explicitly, and hence the name of these type of methods: <em>implicit methods</em>.</p>
+<p>To solve the iteration we need to rely on some numerical method to solve the equation.</p>
+<section id="example-exponential-function-again" class="level3">
+<h3 class="anchored" data-anchor-id="example-exponential-function-again">Example: Exponential function again</h3>
+<p>Recall the equation <span class="math display">\[\dot y = -\mu y.\]</span></p>
+<p>Then, the trapezoidal iteration starting from a given point <span class="math inline">\(y_0\)</span> at time <span class="math inline">\(t_0\)</span> gives:</p>
+<p><span class="math display">\[
+\begin{align}
+y_1 &amp;= y_0 + hf(t_0,y_1)\\
+&amp; = y_0 - h\mu y_1.
+\end{align}
+\]</span></p>
+<p>Fortunately, this is a simple equation to solve and find</p>
+<p><span class="math display">\[
+y_1 = y_0(1+h\mu)^{-1}.
+\]</span></p>
+<p>I claim we can prove by induction that the general case follows:</p>
+<p><span class="math display">\[
+y_{n} = y_0(1+h\mu)^{-n}.
+\]</span></p>
+<p>Proof:</p>
+<p>The case base at <span class="math inline">\(n=1\)</span> was proved in the above lines, so assume the induction hypothesis holds true for <span class="math inline">\(n\)</span>, then</p>
+<p><span class="math display">\[
+\begin{align}
+y_{n+1} &amp;= y_n +hf(t_n,y_{n+1})\\
+&amp;= y_n - h\mu y_{n+1}
+\end{align}
+\]</span></p>
+<p>Solving for <span class="math inline">\(y_{n+1}\)</span> yields</p>
+<p><span class="math display">\[
+\begin{align}
+y_{n+1} &amp;=y_n(1+h\mu)^{-1}\\
+&amp;= y_0(1+h\mu)^{-n}(1+h\mu)^{-1}\\
+&amp;= y_0(1+h\mu)^{-(n+1)}
+\end{align}
+\]</span></p>
+<p>where we used the induction hypothesis in the middle line and thus proving the result.</p>
+<p><span class="math display">\[
+\blacksquare
+\]</span></p>
+<p>Here we see the particular example once more:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ODE derivative</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ode_diff1 <span class="ot">&lt;-</span> <span class="cf">function</span>(t, y, mu){</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="sc">-</span>mu)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>newton <span class="ot">&lt;-</span> <span class="cf">function</span>(fun, dfun, x0, <span class="at">eps =</span> <span class="fl">1e-10</span>, <span class="at">maxiter =</span> <span class="dv">100</span>,...){</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#browser()</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  z <span class="ot">&lt;-</span> <span class="fu">fun</span>(x0,...)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">abs</span>(z)<span class="sc">&lt;=</span>eps){</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> x0,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> z,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">iterations =</span> k,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">convergence =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    change <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span>(k <span class="sc">&lt;=</span> maxiter <span class="sc">&amp;</span> change <span class="sc">&gt;</span> eps){</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      x1 <span class="ot">&lt;-</span> x0 <span class="sc">-</span> <span class="fu">fun</span>(x0,...)<span class="sc">/</span><span class="fu">dfun</span>(x0,...)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      change <span class="ot">&lt;-</span> (x1<span class="sc">-</span>x0)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      x0 <span class="ot">&lt;-</span> x1</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      z <span class="ot">&lt;-</span> <span class="fu">fun</span>(x0)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      k <span class="ot">&lt;-</span> k<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(k <span class="sc">&gt;</span> maxiter){</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>      res <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> x0,</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> z,</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iterations =</span> k,</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>                  <span class="at">convergence =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    }<span class="cf">else</span>{</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>      res <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> x0,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> z,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iterations =</span> k,</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                  <span class="at">convergence =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span>(res)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Function that performs the trapezoidal method on a univariate function</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>trapezoid <span class="ot">&lt;-</span> <span class="cf">function</span>(h,ode,dode,<span class="at">y0 =</span> <span class="dv">0</span>,<span class="at">t0=</span><span class="dv">0</span>,<span class="at">tn=</span><span class="dv">1</span>,...){</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="co">#browser()</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  times <span class="ot">&lt;-</span> <span class="fu">seq</span>(t0,tn,<span class="at">by=</span>h)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(times[<span class="fu">length</span>(times)]<span class="sc">!=</span>tn){</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    times <span class="ot">&lt;-</span> <span class="fu">c</span>(times,tn)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(times),</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                    <span class="at">tn =</span> times,</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                    <span class="at">yn =</span> y0,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">fn =</span> <span class="fu">ode</span>(t0,y0,...))</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Implicit function that needs solving</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  f1 <span class="ot">&lt;-</span> <span class="cf">function</span>(y1,t0,y0,h,ode,...){</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(y1 <span class="sc">-</span>y0 <span class="sc">-</span>h<span class="sc">*</span><span class="fu">ode</span>(t0,y1,...))</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="co"># The derivative</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  df1 <span class="ot">&lt;-</span> <span class="cf">function</span>(y1,t0,y0,h,dode,...){</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="dv">1</span> <span class="sc">-</span>h<span class="sc">*</span><span class="fu">dode</span>(t0,y1,...))</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(res)){</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    newton_sol <span class="ot">&lt;-</span> <span class="fu">newton</span>(<span class="at">fun =</span> f1, <span class="at">dfun =</span> df1, <span class="at">x0 =</span> y0, <span class="at">eps =</span> <span class="fl">1e-6</span>, <span class="at">maxiter =</span> <span class="dv">100</span>, </span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>                         <span class="at">t0 =</span> res<span class="sc">$</span>tn[k],</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>                         <span class="at">y0 =</span> res<span class="sc">$</span>yn[k],</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>                         <span class="at">h =</span> h,</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ode =</span> ode,</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dode =</span> dode,</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>                         ...)</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    res<span class="sc">$</span>yn[k] <span class="ot">&lt;-</span> newton_sol<span class="sc">$</span>x</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    res<span class="sc">$</span>fn[k] <span class="ot">&lt;-</span> newton_sol<span class="sc">$</span>y</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(res)</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the trapezoidal method</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="co"># sol_ex_2 &lt;- trapezoid(h = 0.5,</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="co">#                       ode = ode_ex1,</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="co">#                       dode = ode_diff1,</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a><span class="co">#                       y0 = 1,</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="co">#                       t0=0,</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a><span class="co">#                       tn=5,</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="co">#                       mu = -1/2)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
